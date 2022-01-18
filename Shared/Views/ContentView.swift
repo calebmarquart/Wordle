@@ -11,47 +11,90 @@ struct ContentView: View {
     @StateObject var vm = ViewModel()
     
     var body: some View {
-        VStack(spacing: 10) {
-            HStack {
-                Image(systemName: "questionmark.circle")
-                    .font(.title2)
-                    .foregroundColor(.white.opacity(0.3))
-                Image(systemName: "arrow.uturn.backward")
-                    .font(.title2)
-                    .foregroundColor(.white.opacity(0.3))
-                    .padding(.horizontal, 4)
-                Spacer()
-                Text("WORDLE")
-                    .font(.largeTitle)
-                    .bold()
-                Spacer()
-                Button(action: {
+        ZStack {
+            ZStack(alignment: .top) {
+                VStack(spacing: 10) {
+                    HStack {
+                        Image(systemName: "questionmark.circle")
+                            .font(.title2)
+                            .foregroundColor(.white.opacity(0.3))
+                        Button(action: {
+                            vm.resetGame()
+                        }) {
+                            Image(systemName: "arrow.uturn.backward")
+                                .font(.title2)
+                                .foregroundColor(.white.opacity(0.3))
+                            .padding(.horizontal, 4)
+                        }
+                        Spacer()
+                        Text("WORDLE")
+                            .font(.largeTitle)
+                            .bold()
+                        Spacer()
+                        Button(action: {
+                            
+                        }) {
+                            Image(systemName: "text.justify.leading")
+                                .font(.title2)
+                                .foregroundColor(.white.opacity(0.3))
+                            .padding(.horizontal, 4)
+                        }
+                        Image(systemName: "gear")
+                            .font(.title2)
+                            .foregroundColor(.white.opacity(0.3))
+                    }
+                    .padding()
+                    ForEach(vm.collection, id: \.self) { item in
+                        WordView(vm: vm, characters: item)
+                    }
+                    Spacer()
                     
-                }) {
-                    Image(systemName: "text.justify.leading")
-                        .font(.title2)
-                        .foregroundColor(.white.opacity(0.3))
-                    .padding(.horizontal, 4)
+        //             This is the custom keyboard
+                    VStack {
+                        ForEach(vm.keyboard, id: \.self) { item in
+                            KeyRowView(row: item, vm: vm)
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    Spacer()
                 }
-                Image(systemName: "gear")
-                    .font(.title2)
-                    .foregroundColor(.white.opacity(0.3))
+                
+                Text("NOT A VALID WORD")
+                    .font(.title3)
+                    .foregroundColor(.white)
+                    .bold()
+                    .padding()
+                    .background(Color("filler"))
+                    .cornerRadius(20)
+                    .offset(y: vm.showsNotifcation ? 0 : -120)
+                
             }
-            .padding()
-            ForEach(vm.collection, id: \.self) { item in
-                WordView(characters: item)
-            }
-            Spacer()
+            .blur(radius: vm.showWin ? 10 : 0)
             
-//             This is the custom keyboard
             VStack {
-                ForEach(keyboard, id: \.self) { item in
-                    KeyRowView(row: item, vm: vm)
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        withAnimation(.spring()) { vm.showWin = false }
+                    }) {
+                        Image(systemName: "xmark").foregroundColor(.gray).font(.title2)
+                    }
+                    .padding(.top)
+                    .padding(.horizontal)
                 }
+                Text("CONGRATULATIONS!").font(.title).bold()
+                    .padding(.vertical, 8)
+                Text("You got the correct word \(vm.word)\n in \(vm.guessIndex) guesses ").font(.title3).multilineTextAlignment(.center)
+                    .padding(.bottom, 30)
             }
-            .padding(.horizontal)
+            .frame(maxWidth: .infinity)
+            .background(Color("filler").blur(radius: 5))
+            .cornerRadius(20)
+            .padding()
+            .offset(y: -70)
+            .opacity(vm.showWin ? 1 : 0)
             
-            Spacer()
         }
     }
 }

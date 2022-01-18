@@ -9,14 +9,25 @@ import SwiftUI
 
 struct KeyView: View {
     @ObservedObject var vm: ViewModel
+    @State var color: Color = .gray
     var letter: Character
+    var state: Status
     
     var body: some View {
         Button(action: {
             vm.keyPressed(letter)
         }) {
             ZStack {
-                Color.gray
+                color
+                    .onAppear {
+                        switch state {
+                        case .correct: color = Color("green")
+                        case .contains: color = Color("yellow")
+                        case .none: color = Color("keys")
+                        default: color = .gray
+                        }
+                    }
+                
                 Text(String(letter))
                     .foregroundColor(.white)
                     .bold()
@@ -48,7 +59,7 @@ struct KeyRowView: View {
                 }
             }
             ForEach(row, id: \.self) { item in
-                KeyView(vm: vm, letter: item.char!)
+                KeyView(vm: vm, letter: item.char!, state: item.state)
             }
             if row.count == 7 {
                 Button(action: vm.delete) {
@@ -65,35 +76,3 @@ struct KeyRowView: View {
         }
     }
 }
-
-let keyboard: [[CharacterData]] = [
-    [CharacterData(char: "Q", state: .empty),
-    CharacterData(char: "W", state: .empty),
-    CharacterData(char: "E", state: .empty),
-    CharacterData(char: "R", state: .empty),
-    CharacterData(char: "T", state: .empty),
-    CharacterData(char: "Y", state: .empty),
-    CharacterData(char: "U", state: .empty),
-    CharacterData(char: "I", state: .empty),
-    CharacterData(char: "O", state: .empty),
-    CharacterData(char: "P", state: .empty)],
-    
-    [CharacterData(char: "A", state: .empty),
-    CharacterData(char: "S", state: .empty),
-    CharacterData(char: "D", state: .empty),
-    CharacterData(char: "F", state: .empty),
-    CharacterData(char: "G", state: .empty),
-    CharacterData(char: "H", state: .empty),
-    CharacterData(char: "J", state: .empty),
-    CharacterData(char: "K", state: .empty),
-    CharacterData(char: "L", state: .empty)],
-    
-    [CharacterData(char: "Z", state: .empty),
-    CharacterData(char: "X", state: .empty),
-    CharacterData(char: "C", state: .empty),
-    CharacterData(char: "V", state: .empty),
-    CharacterData(char: "B", state: .empty),
-    CharacterData(char: "N", state: .empty),
-    CharacterData(char: "M", state: .empty)],
-
-]

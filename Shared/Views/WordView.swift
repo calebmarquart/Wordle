@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct WordView: View {
+    @ObservedObject var vm: ViewModel
     var characters: [CharacterData]
     
     var body: some View {
@@ -16,5 +17,6 @@ struct WordView: View {
                 Letter(letter: item.char, state: item.state)
             }
         }
+        .modifier(ShakeEffect(animatableData: CGFloat(vm.shake && characters.last?.char != nil && characters.last?.state == .empty ? 1 : 0)))
     }
 }
