@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		87878EB8279630DF00AB3E06 /* LetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EB7279630DF00AB3E06 /* LetterView.swift */; };
+		87878EB9279630DF00AB3E06 /* LetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EB7279630DF00AB3E06 /* LetterView.swift */; };
+		87878EBB2796310200AB3E06 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EBA2796310200AB3E06 /* WordView.swift */; };
+		87878EBC2796310200AB3E06 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EBA2796310200AB3E06 /* WordView.swift */; };
+		87878EBE2796320E00AB3E06 /* Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EBD2796320E00AB3E06 /* Keyboard.swift */; };
+		87878EBF2796320E00AB3E06 /* Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EBD2796320E00AB3E06 /* Keyboard.swift */; };
+		87878EC1279633A100AB3E06 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EC0279633A100AB3E06 /* Extensions.swift */; };
+		87878EC2279633A100AB3E06 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EC0279633A100AB3E06 /* Extensions.swift */; };
+		879DE07D2794D75E00E539EB /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879DE07C2794D75E00E539EB /* ViewModel.swift */; };
+		879DE07E2794D75E00E539EB /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879DE07C2794D75E00E539EB /* ViewModel.swift */; };
+		879DE0802794D79B00E539EB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879DE07F2794D79B00E539EB /* Model.swift */; };
+		879DE0812794D79B00E539EB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879DE07F2794D79B00E539EB /* Model.swift */; };
+		87B287172793FE7800A7ED53 /* Words.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B287162793FE7800A7ED53 /* Words.swift */; };
+		87B287182793FE7800A7ED53 /* Words.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B287162793FE7800A7ED53 /* Words.swift */; };
 		87CF15AD2792588800F37766 /* WordleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87CF159D2792588700F37766 /* WordleApp.swift */; };
 		87CF15AE2792588800F37766 /* WordleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87CF159D2792588700F37766 /* WordleApp.swift */; };
 		87CF15AF2792588800F37766 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87CF159E2792588700F37766 /* ContentView.swift */; };
@@ -16,6 +30,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		87878EB7279630DF00AB3E06 /* LetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterView.swift; sourceTree = "<group>"; };
+		87878EBA2796310200AB3E06 /* WordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordView.swift; sourceTree = "<group>"; };
+		87878EBD2796320E00AB3E06 /* Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keyboard.swift; sourceTree = "<group>"; };
+		87878EC0279633A100AB3E06 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		879DE07C2794D75E00E539EB /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		879DE07F2794D79B00E539EB /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		87B287162793FE7800A7ED53 /* Words.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Words.swift; sourceTree = "<group>"; };
 		87CF159D2792588700F37766 /* WordleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordleApp.swift; sourceTree = "<group>"; };
 		87CF159E2792588700F37766 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		87CF159F2792588800F37766 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -42,6 +63,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		87878EB62796307700AB3E06 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				87CF159E2792588700F37766 /* ContentView.swift */,
+				87878EB7279630DF00AB3E06 /* LetterView.swift */,
+				87878EBA2796310200AB3E06 /* WordView.swift */,
+				87878EBD2796320E00AB3E06 /* Keyboard.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		87CF15972792588700F37766 = {
 			isa = PBXGroup;
 			children = (
@@ -55,7 +87,11 @@
 			isa = PBXGroup;
 			children = (
 				87CF159D2792588700F37766 /* WordleApp.swift */,
-				87CF159E2792588700F37766 /* ContentView.swift */,
+				87878EB62796307700AB3E06 /* Views */,
+				879DE07C2794D75E00E539EB /* ViewModel.swift */,
+				87878EC0279633A100AB3E06 /* Extensions.swift */,
+				879DE07F2794D79B00E539EB /* Model.swift */,
+				87B287162793FE7800A7ED53 /* Words.swift */,
 				87CF159F2792588800F37766 /* Assets.xcassets */,
 			);
 			path = Shared;
@@ -176,7 +212,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				879DE0802794D79B00E539EB /* Model.swift in Sources */,
+				87878EC1279633A100AB3E06 /* Extensions.swift in Sources */,
+				87B287172793FE7800A7ED53 /* Words.swift in Sources */,
+				87878EBB2796310200AB3E06 /* WordView.swift in Sources */,
 				87CF15AF2792588800F37766 /* ContentView.swift in Sources */,
+				87878EBE2796320E00AB3E06 /* Keyboard.swift in Sources */,
+				879DE07D2794D75E00E539EB /* ViewModel.swift in Sources */,
+				87878EB8279630DF00AB3E06 /* LetterView.swift in Sources */,
 				87CF15AD2792588800F37766 /* WordleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -185,7 +228,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				879DE0812794D79B00E539EB /* Model.swift in Sources */,
+				87878EC2279633A100AB3E06 /* Extensions.swift in Sources */,
+				87B287182793FE7800A7ED53 /* Words.swift in Sources */,
+				87878EBC2796310200AB3E06 /* WordView.swift in Sources */,
 				87CF15B02792588800F37766 /* ContentView.swift in Sources */,
+				87878EBF2796320E00AB3E06 /* Keyboard.swift in Sources */,
+				879DE07E2794D75E00E539EB /* ViewModel.swift in Sources */,
+				87878EB9279630DF00AB3E06 /* LetterView.swift in Sources */,
 				87CF15AE2792588800F37766 /* WordleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -319,7 +369,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -349,7 +399,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
