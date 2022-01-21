@@ -8,56 +8,22 @@
 import SwiftUI
 
 class ViewModel: ObservableObject {
-    var word: String = ""
-    var charArr = [Character]()
+    @Published var word: String = ""
+    @Published var charArr = [Character]()
     
     @Published var guessIndex: Int = 0
     @Published var currentWordIndex: Int = 0
     @Published var showsNotifcation: Bool = false
     @Published var shake: Bool = false
     @Published var showWin: Bool = false
+    @Published var showLoss: Bool = false
+    @Published var isTwoPlayer: Bool = false
     
     @Published var greenLetters = Set<Character>()
     @Published var noneLetters = Set<Character>()
     @Published var yellowLetters = Set<Character>()
     
-    @Published var collection: [[CharacterData]] = [
-        [CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),],
-        
-        [CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),],
-        
-        [CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),],
-        
-        [CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),],
-        
-        [CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),],
-        
-        [CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),
-         CharacterData(char: nil),]
-    ]
+    @Published var collection = [[CharacterData]]()
     
     @Published var keyboard: [[CharacterData]] = [
         [CharacterData(char: "Q", state: .empty),
@@ -96,6 +62,15 @@ class ViewModel: ObservableObject {
         for char in word {
             charArr.append(char)
         }
+        var collection = [[CharacterData]]()
+        for _ in 0..<6 {
+            var length = [CharacterData]()
+            for _ in 0..<5 {
+                length.append(CharacterData(char: nil))
+            }
+            collection.append(length)
+        }
+        self.collection = collection
     }
     
     func guess() {
@@ -141,6 +116,11 @@ class ViewModel: ObservableObject {
             HapticsManager.instance.notification(.success)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 withAnimation(.spring()) { self.showWin = true }
+            }
+        } else if guessIndex > 5 {
+            HapticsManager.instance.notification(.error)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                withAnimation(.spring()) { self.showLoss = true }
             }
         }
     }
