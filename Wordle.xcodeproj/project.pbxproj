@@ -80,8 +80,8 @@
 			children = (
 				87CF159E2792588700F37766 /* ContentView.swift */,
 				87D65D57279A738000F3DDFB /* GameView.swift */,
-				87C81EE2279726D10019C21D /* SettingsView.swift */,
 				87D65D5A279A7AFA00F3DDFB /* TypeWordView.swift */,
+				87C81EE2279726D10019C21D /* SettingsView.swift */,
 				87878EB7279630DF00AB3E06 /* LetterView.swift */,
 				87878EBA2796310200AB3E06 /* WordView.swift */,
 				87878EBD2796320E00AB3E06 /* Keyboard.swift */,

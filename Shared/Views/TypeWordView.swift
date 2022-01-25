@@ -23,11 +23,13 @@ struct TypeWordView: View {
                         .cornerRadius(10)
                     
                     Button(action: {
-                        vm.word = text.uppercased()
+                        guard text.isCorrect() else { return }
                         var newArr = [Character]()
-                        for char in vm.word {
+                        for char in text.uppercased() {
                             newArr.append(char)
                         }
+                        guard newArr.count == 5 else { return }
+                        vm.word = text.uppercased()
                         vm.charArr = newArr
                         isActive = true
                     }) {

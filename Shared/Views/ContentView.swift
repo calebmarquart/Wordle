@@ -9,19 +9,19 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var vm = ViewModel()
+    @State var singlePlayerActive: Bool = false
+    @State var twoPlayerActive: Bool = false
     
     var body: some View {
         NavigationView {
             VStack(spacing: 50) {
-                NavigationLink(destination:
-                                GameView(vm: vm)
-                                .navigationBarTitle("")
-                                .navigationBarHidden(true)
-                                .navigationBarBackButtonHidden(true)
-                ) {
+                Button(action: {
+                    singlePlayerActive = true
+                    vm.isTwoPlayer = false
+                }) {
                     VStack {
                         Image(systemName: "person.fill").font(.system(size: 80))
-                        Text("ONE PLAYER").bold()
+                        Text("One Player").bold()
                             .padding(4)
                     }
                     .foregroundColor(.white)
@@ -29,11 +29,20 @@ struct ContentView: View {
                     .background(Color("yellow"))
                     .cornerRadius(20)
                 }
+                NavigationLink(destination:
+                                GameView(vm: vm)
+                                .navigationBarTitle("")
+                                .navigationBarHidden(true)
+                                .navigationBarBackButtonHidden(true)
+                               , isActive: $singlePlayerActive) { EmptyView() }
                 
-                NavigationLink(destination: TypeWordView(vm: vm)) {
+                Button(action: {
+                    twoPlayerActive = true
+                    vm.isTwoPlayer = true
+                }) {
                     VStack {
                         Image(systemName: "person.2.fill").font(.system(size: 80))
-                        Text("TWO PLAYER").bold()
+                        Text("Two Player").bold()
                             .padding(4)
                     }
                     .foregroundColor(.white)
@@ -41,6 +50,8 @@ struct ContentView: View {
                     .background(Color("yellow"))
                 .cornerRadius(20)
                 }
+                
+                NavigationLink(destination: TypeWordView(vm: vm).navigationTitle("Two Player").navigationBarTitleDisplayMode(.inline), isActive: $twoPlayerActive){ EmptyView() }
             }
             .navigationTitle("")
             .navigationBarHidden(true)
