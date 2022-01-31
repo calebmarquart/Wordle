@@ -9,7 +9,6 @@ import SwiftUI
 
 struct TypeWordView: View {
     @ObservedObject var vm: ViewModel
-    @State var text: String = ""
     @State var isActive: Bool = false
     
     var body: some View {
@@ -17,21 +16,13 @@ struct TypeWordView: View {
             VStack {
                 Text("Enter a word for your opponent to guess")
                 HStack {
-                    TextField("Word choice", text: $text)
+                    TextField("\(vm.letterCount) letter word", text: $vm.textField)
                         .padding()
                         .background(Color("filler"))
                         .cornerRadius(10)
                     
                     Button(action: {
-                        guard text.isCorrect() else { return }
-                        var newArr = [Character]()
-                        for char in text.uppercased() {
-                            newArr.append(char)
-                        }
-                        guard newArr.count == 5 else { return }
-                        vm.word = text.uppercased()
-                        vm.charArr = newArr
-                        isActive = true
+                        isActive = vm.twoPlayerWordTyped()
                     }) {
                         Image(systemName: "checkmark")
                             .foregroundColor(.white)

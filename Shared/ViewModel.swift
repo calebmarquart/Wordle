@@ -6,25 +6,38 @@
 //
 
 import SwiftUI
+import CoreData
 
 class ViewModel: ObservableObject {
+    @AppStorage("letterCount") var letterCount: Int = 5 { didSet { resetGame() }}
+    @AppStorage("gamesPlayed") var gamesPlayed: Int = 0 { didSet { winPercentage = winPercentage(a: gamesWon, b: gamesPlayed) }}
+    @AppStorage("gamesWon") var gamesWon: Int = 0 { didSet { winPercentage = winPercentage(a: gamesWon, b: gamesPlayed) }}
+    @AppStorage("currentStreak") var currentStreak = 0
+    @AppStorage("maxStreak") var maxStreak = 0
+    @AppStorage("soundEnabled") var soundEnabled: Bool = true
+    @AppStorage("hapticsEnabled") var hapticsEnabled: Bool = true
+
+    var gameCompleted = false
     @Published var word: String = ""
-    @Published var charArr = [Character]()
-    
+    @Published var solutionArr = [Character]()
+    @Published var winPercentage: Int = 0
+    @Published var textField: String = ""
     @Published var guessIndex: Int = 0
-    @Published var currentWordIndex: Int = 0
+    @Published var letterIndex: Int = 0
     @Published var showsNotifcation: Bool = false
+    @Published var message: String = ""
     @Published var shake: Bool = false
     @Published var showWin: Bool = false
     @Published var showLoss: Bool = false
+    @Published var showStats: Bool = false
     @Published var isTwoPlayer: Bool = false
-    
+    @Published var isDailyMode: Bool = false
+    @Published var guessDistribution: [Int] = [0, 0, 0, 0, 0, 0]
+    @Published var maxGuess: Int = 1
     @Published var greenLetters = Set<Character>()
     @Published var noneLetters = Set<Character>()
     @Published var yellowLetters = Set<Character>()
-    
     @Published var collection = [[CharacterData]]()
-    
     @Published var keyboard: [[CharacterData]] = [
         [CharacterData(char: "Q", state: .empty),
          CharacterData(char: "W", state: .empty),
@@ -57,175 +70,231 @@ class ViewModel: ObservableObject {
     ]
     
     init() {
-        word = (words5.randomElement()?.uppercased())!
-        print(word)
-        for char in word {
-            charArr.append(char)
+        collection = createEmptyBoard(rows: 6, rowLength: letterCount)
+        winPercentage = winPercentage(a: gamesWon, b: gamesPlayed)
+        if UserDefaults.standard.object(forKey: "guessDistribution") == nil {
+            let guessDistributionArray = [0, 0, 0, 0, 0, 0]
+            UserDefaults.standard.set(guessDistributionArray, forKey: "guessDistribution")
         }
-        var collection = [[CharacterData]]()
-        for _ in 0..<6 {
-            var length = [CharacterData]()
-            for _ in 0..<5 {
-                length.append(CharacterData(char: nil))
-            }
-            collection.append(length)
+        guessDistribution = UserDefaults.standard.object(forKey: "guessDistribution") as? [Int] ?? []
+        if (guessDistribution.max() ?? 1) > 0 {
+            maxGuess = guessDistribution.max() ?? 1
+        } else {
+            maxGuess = 1
         }
-        self.collection = collection
     }
     
     func guess() {
         guard guessIndex < 6 else { print("you lose"); return }
         let arr = collection[guessIndex]
-        guard arr.last?.char != nil else { print("nil found in last letter of guess \(guessIndex + 1)"); return }
+        guard arr.last?.char != nil else { showNotification(message: tooShort); return }
         var newArr = [Character]()
         for arr in arr {
             newArr.append(arr.char!)
         }
         let word = String(newArr).uppercased()
         print("You guessed the word \(word)")
+        if guessIndex == 0 {
+            gamesPlayed += 1
+        }
         
-        guard word.count == 5 else { print("word too short"); return }
-        guard word.isCorrect() else { print("not a real word"); notAWord(); return }
+        guard word.isCorrect() else { print("NOT A REAL WORD"); showNotification(message: notInList); return }
         
         var guessArr = [Character]()
         for char in word {
             guessArr.append(char)
         }
         
-        var saveIndex = Set<Character>()
+        var solutionCharsTaken = [Bool]()
+        for _ in 0..<letterCount {
+            solutionCharsTaken.append(false)
+        }
+        
         for i in 0 ..< guessArr.count {
-            if guessArr[i] == charArr[i] {
+            if guessArr[i] == solutionArr[i] {
                 collection[guessIndex][i].state = .correct
-                greenLetters.insert(guessArr[i])
-                saveIndex.insert(guessArr[i])
-            } else if charArr.contains(guessArr[i]) && !saveIndex.contains(guessArr[i]) {
-                collection[guessIndex][i].state = .contains
-                yellowLetters.insert(guessArr[i])
+                solutionCharsTaken[i] = true
+            } else if !solutionArr.contains(guessArr[i]) {
+                collection[guessIndex][i].state = .none
+                noneLetters.insert(guessArr[i])
+            }
+        }
+        for i in 0 ..< guessArr.count {
+            if let foo = solutionArr.firstIndex(where: {$0 == guessArr[i]}) {
+                if !solutionCharsTaken[foo] {
+                    collection[guessIndex][i].state = .contains
+                    yellowLetters.insert(guessArr[i])
+                    solutionCharsTaken[foo] = true
+                } else {
+                    collection[guessIndex][i].state = .none
+                    noneLetters.insert(guessArr[i])
+                }
             } else {
                 collection[guessIndex][i].state = .none
                 noneLetters.insert(guessArr[i])
             }
         }
+        for i in 0 ..< guessArr.count {
+            if guessArr[i] == solutionArr[i] {
+                collection[guessIndex][i].state = .correct
+                greenLetters.insert(guessArr[i])
+                solutionCharsTaken[i] = true
+            }
+        }
+        
         guessIndex += 1
-        currentWordIndex = 0
+        letterIndex = 0
         updateKeys()
         greenLetters = Set<Character>()
         noneLetters = Set<Character>()
         yellowLetters = Set<Character>()
         if word == self.word {
-            HapticsManager.instance.notification(.success)
+            gameCompleted = true
+            currentStreak += 1
+            gamesWon += 1
+            if maxStreak < currentStreak {
+                maxStreak = currentStreak
+            }
+            var currentDistribution = UserDefaults.standard.object(forKey: "guessDistribution") as? [Int] ?? []
+            currentDistribution[guessIndex-1] += 1
+            saveGuessDistribution(currentDistribution)
+            if hapticsEnabled { HapticsManager.instance.notification(.success) }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 withAnimation(.spring()) { self.showWin = true }
+                if self.soundEnabled { SoundMangaer.instance.playSound(winSound) }
             }
+            
         } else if guessIndex > 5 {
-            HapticsManager.instance.notification(.error)
+            gameCompleted = true
+            if maxStreak < currentStreak {
+                maxStreak = currentStreak
+            }
+            currentStreak = 0
+            if hapticsEnabled { HapticsManager.instance.notification(.error) }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 withAnimation(.spring()) { self.showLoss = true }
+                if self.soundEnabled { SoundMangaer.instance.playSound(lossSound) }
             }
         }
     }
     
     func keyPressed(_ letter: Character) {
-        guard currentWordIndex < 5 else { return }
-        collection[guessIndex][currentWordIndex] = CharacterData(char: letter)
-        currentWordIndex += 1
+        guard letterIndex < letterCount && !gameCompleted else { return }
+        collection[guessIndex][letterIndex] = CharacterData(char: letter)
+        letterIndex += 1
     }
     
     func delete() {
-        guard currentWordIndex > 0 else { return }
-        currentWordIndex -= 1
-        collection[guessIndex][currentWordIndex] = CharacterData(char: nil)
+        guard letterIndex > 0 && !gameCompleted else { return }
+        letterIndex -= 1
+        collection[guessIndex][letterIndex] = CharacterData(char: nil)
     }
     
-    func notAWord() {
+    func showNotification(message: String) {
+        self.message = message
         withAnimation(.easeInOut) { shake.toggle() }
         withAnimation(.spring()) { showsNotifcation = true }
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             withAnimation(.spring()) { self.showsNotifcation = false }
         }
-        HapticsManager.instance.notification(.warning)
+        if hapticsEnabled { HapticsManager.instance.notification(.warning) }
+    }
+    
+    func changeRandomWord() {
+        switch letterCount {
+        case 4: word = (words4.randomElement()?.uppercased())!
+        case 6: word = (words6.randomElement()?.uppercased())!
+        default: word = (words5.randomElement()?.uppercased())!
+        }
+        print(word)
+        var solutionArr = [Character]()
+        for char in word {
+            solutionArr.append(char)
+        }
+        self.solutionArr = solutionArr
+    }
+    
+    func resetStatistics() {
+        maxStreak = 0
+        currentStreak = 0
+        gamesWon = 0
+        gamesPlayed = 0
+        saveGuessDistribution([0, 0, 0, 0, 0, 0])
     }
     
     func resetGame() {
-        keyboard = [
-            [CharacterData(char: "Q", state: .empty),
-             CharacterData(char: "W", state: .empty),
-             CharacterData(char: "E", state: .empty),
-             CharacterData(char: "R", state: .empty),
-             CharacterData(char: "T", state: .empty),
-             CharacterData(char: "Y", state: .empty),
-             CharacterData(char: "U", state: .empty),
-             CharacterData(char: "I", state: .empty),
-             CharacterData(char: "O", state: .empty),
-             CharacterData(char: "P", state: .empty)],
-            
-            [CharacterData(char: "A", state: .empty),
-             CharacterData(char: "S", state: .empty),
-             CharacterData(char: "D", state: .empty),
-             CharacterData(char: "F", state: .empty),
-             CharacterData(char: "G", state: .empty),
-             CharacterData(char: "H", state: .empty),
-             CharacterData(char: "J", state: .empty),
-             CharacterData(char: "K", state: .empty),
-             CharacterData(char: "L", state: .empty)],
-            
-            [CharacterData(char: "Z", state: .empty),
-             CharacterData(char: "X", state: .empty),
-             CharacterData(char: "C", state: .empty),
-             CharacterData(char: "V", state: .empty),
-             CharacterData(char: "B", state: .empty),
-             CharacterData(char: "N", state: .empty),
-             CharacterData(char: "M", state: .empty)]
-        ]
-        
-        collection = [
-            [CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),],
-            
-            [CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),],
-            
-            [CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),],
-            
-            [CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),],
-            
-            [CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),],
-            
-            [CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),
-             CharacterData(char: nil),]
-        ]
-        
-        guessIndex = 0
-        currentWordIndex = 0
-        
-        word = (words5.randomElement()?.uppercased())!
-        charArr = []
-        print(word)
-        for char in word {
-            charArr.append(char)
+        for row in 0..<keyboard.count {
+            for letter in 0..<keyboard[row].count {
+                keyboard[row][letter].state = .empty
+            }
         }
         
+        collection = createEmptyBoard(rows: 6, rowLength: letterCount)
+        
+        guessIndex = 0
+        letterIndex = 0
+        gameCompleted = false
+        
+        if !isTwoPlayer && !isDailyMode {
+            changeRandomWord()
+        }
+    }
+    
+    func winPercentage(a: Int, b: Int) -> Int {
+        if b == 0 {
+            return 0
+        } else {
+            return Int((Double(a)/Double(b) * 100))
+        }
+    }
+    
+    func saveGuessDistribution(_ object: [Int]) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(object, forKey: "guessDistribution")
+        guessDistribution = userDefaults.object(forKey: "guessDistribution") as? [Int] ?? []
+        if (guessDistribution.max() ?? 1) > 0 {
+            maxGuess = guessDistribution.max() ?? 1
+        } else {
+            maxGuess = 1
+        }
+    }
+    
+    func getDateIndex() -> Int {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/MM/dd"
+        let referenceDate = formatter.date(from: "2022/01/01")
+        let calendar = Calendar.current
+
+        // Replace the hour (time) of both dates with 00:00
+        let date1 = calendar.startOfDay(for: referenceDate!)
+        let date2 = calendar.startOfDay(for: Date())
+
+        let components = calendar.dateComponents([.day], from: date1, to: date2)
+        return components.day ?? 0
+    }
+    
+    func createEmptyBoard(rows: Int, rowLength: Int) -> [[CharacterData]] {
+        var collection = [[CharacterData]]()
+        for _ in 0..<rows {
+            var row = [CharacterData]()
+            for _ in 0..<rowLength {
+                row.append(CharacterData(char: nil))
+            }
+            collection.append(row)
+        }
+        return collection
+    }
+    
+    func twoPlayerWordTyped() -> Bool {
+        guard textField.isCorrect() else { return false }
+        var newArr = [Character]()
+        for char in textField.uppercased() {
+            newArr.append(char)
+        }
+        guard newArr.count == letterCount else { return false }
+        word = textField.uppercased()
+        solutionArr = newArr
+        return true
     }
     
     func updateKeys() {
@@ -268,6 +337,4 @@ class ViewModel: ObservableObject {
             }
         }
     }
-    
-    
 }

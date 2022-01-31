@@ -19,3 +19,6 @@ struct CharacterData: Identifiable, Hashable {
     var char: Character?
     var state: Status = .empty
 }
+
+let notInList = "NOT IN WORD LIST"
+let tooShort = "NOT ENOUGH LETTERS"

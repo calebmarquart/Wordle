@@ -9,45 +9,61 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.presentationMode) private var presentationMode
-    @State var selections: Int = 5
-    let array = [4, 5, 6]
+    @ObservedObject var vm: ViewModel
     
     var body: some View {
-        ZStack(alignment: .top) {
-            VStack {
-                HStack {
-                    Spacer()
-                    Text("SETTINGS")
-                        .font(.largeTitle)
-                        .bold()
-                        .padding(.leading, 40)
-                    Spacer()
+        NavigationView {
+            Form {
+                Section {
+                    Picker("What is your favorite color?", selection: $vm.letterCount) {
+                        Text("4").tag(4)
+                        Text("5").tag(5)
+                        Text("6").tag(6)
+                    }
+                    .pickerStyle(.segmented)
+                } header: {
+                    Text("Word Length")
+                }
+                Section {
+                    Toggle("Sounds", isOn: $vm.soundEnabled)
+                    Toggle("Haptics", isOn: $vm.hapticsEnabled)
+                } header: {
+                    Text("Preferences")
+                }
+                Section {
+                    HStack {
+                        Text("Developer")
+                        Spacer()
+                        Text("Caleb Marquart").foregroundColor(.gray)
+                    }
+                    HStack {
+                        Text("Version")
+                        Spacer()
+                        Text("0.1.0").foregroundColor(.gray)
+                    }
+                } header: {
+                    Text("About")
+                }
+
+            }
+            .navigationTitle("Settings")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "xmark")
                             .foregroundColor(.gray)
-                            .font(.title2)
-                        .padding(.trailing)
                     }
                 }
-                
-                VStack(alignment: .leading) {
-                    Text("HOW LONG OF WORD DO YOU WANT?").font(.caption)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                
-                Spacer()
             }
-            .padding(.vertical, 30)
         }
     }
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(vm: ViewModel())
             .preferredColorScheme(.dark)
     }
 }

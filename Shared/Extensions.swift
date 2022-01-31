@@ -9,12 +9,13 @@ import SwiftUI
 
 extension String {
     func isCorrect() -> Bool {
+        guard !bannedWords.contains(self.lowercased()) else { return false }
         let checker = UITextChecker()
         let range = NSRange(location: 0, length: self.lowercased().utf16.count)
         let misspelledRange = checker.rangeOfMisspelledWord(in: self.lowercased(), range: range, startingAt: 0, wrap: false, language: "en")
         return misspelledRange.location == NSNotFound
     }
-}
+} 
 
 struct ShakeEffect: GeometryEffect {
     var animatableData: CGFloat
@@ -44,3 +45,11 @@ class HapticsManager {
         generator.impactOccurred()
     }
 }
+
+#if canImport(UIKit)
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+#endif

@@ -10,7 +10,8 @@ import SwiftUI
 struct GameView: View {
     @ObservedObject var vm: ViewModel
     @State private var showSettings: Bool = false
-    @State var showAreYouSure: Bool = false
+    @State private var showAreYouSure: Bool = false
+    @State private var showResetStat: Bool = false
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -23,20 +24,25 @@ struct GameView: View {
                                 .font(.title2)
                                 .foregroundColor(.white.opacity(0.3))
                         } else {
-                            Button(action: {self.presentationMode.wrappedValue.dismiss()}) {
+                            Button(action: {
+                                self.presentationMode.wrappedValue.dismiss()
+                                vm.isDailyMode = false
+                            }) {
                                 Image(systemName: "person.2.circle")
                                     .font(.title2)
                                 .foregroundColor(.white.opacity(0.3))
                             }
                         }
-                            
-                        Button(action: {
-                            withAnimation(.spring()) { showAreYouSure = true }
-                        }) {
-                            Image(systemName: "arrow.uturn.backward")
-                                .font(.title2)
-                                .foregroundColor(.white.opacity(0.3))
-                                .padding(.horizontal, 4)
+                        
+                        if !vm.isDailyMode {
+                            Button(action: {
+                                withAnimation(.spring()) { showAreYouSure = true }
+                            }) {
+                                Image(systemName: "arrow.uturn.backward")
+                                    .font(.title2)
+                                    .foregroundColor(.white.opacity(0.3))
+                                    .padding(.horizontal, 4)
+                            }
                         }
                         Spacer()
                         Text("WORDLE")
@@ -44,19 +50,21 @@ struct GameView: View {
                             .bold()
                         Spacer()
                         Button(action: {
-                            
+                            withAnimation(.spring()) { vm.showStats.toggle() }
                         }) {
                             Image(systemName: "text.justify.leading")
                                 .font(.title2)
                                 .foregroundColor(.white.opacity(0.3))
                                 .padding(.horizontal, 4)
                         }
-                        Button(action: {
-                            showSettings.toggle()
-                        }) {
-                            Image(systemName: "gear")
-                                .font(.title2)
-                                .foregroundColor(.white.opacity(0.3))
+                        if !vm.isDailyMode {
+                            Button(action: {
+                                showSettings.toggle()
+                            }) {
+                                Image(systemName: "gear")
+                                    .font(.title2)
+                                    .foregroundColor(.white.opacity(0.3))
+                            }
                         }
                     }
                     .padding()
@@ -75,11 +83,11 @@ struct GameView: View {
                     
                     Spacer()
                         .sheet(isPresented: $showSettings) {
-                            SettingsView()
+                            SettingsView(vm: vm)
                         }
                 }
                 
-                Text("NOT A VALID WORD")
+                Text(vm.message)
                     .font(.title3)
                     .foregroundColor(.white)
                     .bold()
@@ -89,19 +97,31 @@ struct GameView: View {
                     .offset(y: vm.showsNotifcation ? 0 : -120)
                 
             }
-            .blur(radius: vm.showWin || vm.showLoss || showAreYouSure ? 15 : 0)
+//            .blur(radius: vm.showWin || vm.showLoss || showAreYouSure ? 15 : 0)
+            .opacity(vm.showWin || vm.showLoss || showAreYouSure || vm.showStats ? 0.2 : 1)
             
             WinScreenView(vm: vm)
-            LoseScreenView(vm: vm)
-            AreYouSure(vm: vm, showing: $showAreYouSure, presentation: presentationMode)
+            LoseScreenView(vm: vm, presentation: presentationMode)
+            ConfirmResetGame(vm: vm, showing: $showAreYouSure, presentation: presentationMode)
+            StatsView(vm: vm, showStats: $vm.showStats, showReset: $showResetStat)
+                .offset(y: -30)
+            ConfirmResetStats(vm: vm, showing: $showResetStat)
             
         }
     }
+         
+    
+                            
 }
 
 
 struct GameView_Previews: PreviewProvider {
     static var previews: some View {
         GameView(vm: ViewModel())
+            .preferredColorScheme(.dark)
     }
 }
+
+                             
+
+

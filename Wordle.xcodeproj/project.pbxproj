@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		874A59C927A3DDC8000AEFA8 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874A59C827A3DDC8000AEFA8 /* SoundManager.swift */; };
+		874A59CA27A3DDC8000AEFA8 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874A59C827A3DDC8000AEFA8 /* SoundManager.swift */; };
+		874A59CF27A4CEE1000AEFA8 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874A59CE27A4CEE1000AEFA8 /* StatsView.swift */; };
+		874A59D027A4CEE1000AEFA8 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874A59CE27A4CEE1000AEFA8 /* StatsView.swift */; };
+		87691EF927A7614B0007CA74 /* StatsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87691EF827A7614B0007CA74 /* StatsHelper.swift */; };
+		87691EFA27A7614B0007CA74 /* StatsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87691EF827A7614B0007CA74 /* StatsHelper.swift */; };
 		87878EB8279630DF00AB3E06 /* LetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EB7279630DF00AB3E06 /* LetterView.swift */; };
 		87878EB9279630DF00AB3E06 /* LetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EB7279630DF00AB3E06 /* LetterView.swift */; };
 		87878EBB2796310200AB3E06 /* WordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87878EBA2796310200AB3E06 /* WordView.swift */; };
@@ -35,9 +41,18 @@
 		87D65D59279A738000F3DDFB /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D65D57279A738000F3DDFB /* GameView.swift */; };
 		87D65D5B279A7AFA00F3DDFB /* TypeWordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D65D5A279A7AFA00F3DDFB /* TypeWordView.swift */; };
 		87D65D5C279A7AFA00F3DDFB /* TypeWordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D65D5A279A7AFA00F3DDFB /* TypeWordView.swift */; };
+		87E0217127A6485A006F94E1 /* loss.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 87E0217027A6485A006F94E1 /* loss.mp3 */; };
+		87E0217227A6485A006F94E1 /* loss.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 87E0217027A6485A006F94E1 /* loss.mp3 */; };
+		87E0217427A64B65006F94E1 /* win.wav in Resources */ = {isa = PBXBuildFile; fileRef = 87E0217327A64B65006F94E1 /* win.wav */; };
+		87E0217527A64B65006F94E1 /* win.wav in Resources */ = {isa = PBXBuildFile; fileRef = 87E0217327A64B65006F94E1 /* win.wav */; };
+		87E0217727A64B6D006F94E1 /* click.wav in Resources */ = {isa = PBXBuildFile; fileRef = 87E0217627A64B6D006F94E1 /* click.wav */; };
+		87E0217827A64B6D006F94E1 /* click.wav in Resources */ = {isa = PBXBuildFile; fileRef = 87E0217627A64B6D006F94E1 /* click.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		874A59C827A3DDC8000AEFA8 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundManager.swift; sourceTree = "<group>"; };
+		874A59CE27A4CEE1000AEFA8 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		87691EF827A7614B0007CA74 /* StatsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsHelper.swift; sourceTree = "<group>"; };
 		87878EB7279630DF00AB3E06 /* LetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterView.swift; sourceTree = "<group>"; };
 		87878EBA2796310200AB3E06 /* WordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordView.swift; sourceTree = "<group>"; };
 		87878EBD2796320E00AB3E06 /* Keyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keyboard.swift; sourceTree = "<group>"; };
@@ -55,6 +70,9 @@
 		87CF15AC2792588800F37766 /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
 		87D65D57279A738000F3DDFB /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		87D65D5A279A7AFA00F3DDFB /* TypeWordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeWordView.swift; sourceTree = "<group>"; };
+		87E0217027A6485A006F94E1 /* loss.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = loss.mp3; sourceTree = "<group>"; };
+		87E0217327A64B65006F94E1 /* win.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = win.wav; sourceTree = "<group>"; };
+		87E0217627A64B6D006F94E1 /* click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = click.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +93,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		87691EF327A75A6C0007CA74 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				87E0217327A64B65006F94E1 /* win.wav */,
+				87E0217627A64B6D006F94E1 /* click.wav */,
+				87E0217027A6485A006F94E1 /* loss.mp3 */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		87878EB62796307700AB3E06 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -82,10 +110,11 @@
 				87D65D57279A738000F3DDFB /* GameView.swift */,
 				87D65D5A279A7AFA00F3DDFB /* TypeWordView.swift */,
 				87C81EE2279726D10019C21D /* SettingsView.swift */,
+				874A59CE27A4CEE1000AEFA8 /* StatsView.swift */,
+				87C81EE5279731760019C21D /* OutcomeViews.swift */,
 				87878EB7279630DF00AB3E06 /* LetterView.swift */,
 				87878EBA2796310200AB3E06 /* WordView.swift */,
 				87878EBD2796320E00AB3E06 /* Keyboard.swift */,
-				87C81EE5279731760019C21D /* OutcomeViews.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -105,9 +134,12 @@
 				87CF159D2792588700F37766 /* WordleApp.swift */,
 				87878EB62796307700AB3E06 /* Views */,
 				879DE07C2794D75E00E539EB /* ViewModel.swift */,
+				874A59C827A3DDC8000AEFA8 /* SoundManager.swift */,
 				87878EC0279633A100AB3E06 /* Extensions.swift */,
 				879DE07F2794D79B00E539EB /* Model.swift */,
+				87691EF827A7614B0007CA74 /* StatsHelper.swift */,
 				87B287162793FE7800A7ED53 /* Words.swift */,
+				87691EF327A75A6C0007CA74 /* Sounds */,
 				87CF159F2792588800F37766 /* Assets.xcassets */,
 			);
 			path = Shared;
@@ -209,7 +241,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87E0217427A64B65006F94E1 /* win.wav in Resources */,
 				87CF15B12792588800F37766 /* Assets.xcassets in Resources */,
+				87E0217127A6485A006F94E1 /* loss.mp3 in Resources */,
+				87E0217727A64B6D006F94E1 /* click.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,7 +252,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87E0217527A64B65006F94E1 /* win.wav in Resources */,
 				87CF15B22792588800F37766 /* Assets.xcassets in Resources */,
+				87E0217227A6485A006F94E1 /* loss.mp3 in Resources */,
+				87E0217827A64B6D006F94E1 /* click.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,8 +277,11 @@
 				87878EBE2796320E00AB3E06 /* Keyboard.swift in Sources */,
 				879DE07D2794D75E00E539EB /* ViewModel.swift in Sources */,
 				87878EB8279630DF00AB3E06 /* LetterView.swift in Sources */,
+				87691EF927A7614B0007CA74 /* StatsHelper.swift in Sources */,
+				874A59CF27A4CEE1000AEFA8 /* StatsView.swift in Sources */,
 				87D65D58279A738000F3DDFB /* GameView.swift in Sources */,
 				87CF15AD2792588800F37766 /* WordleApp.swift in Sources */,
+				874A59C927A3DDC8000AEFA8 /* SoundManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,8 +300,11 @@
 				87878EBF2796320E00AB3E06 /* Keyboard.swift in Sources */,
 				879DE07E2794D75E00E539EB /* ViewModel.swift in Sources */,
 				87878EB9279630DF00AB3E06 /* LetterView.swift in Sources */,
+				87691EFA27A7614B0007CA74 /* StatsHelper.swift in Sources */,
+				874A59D027A4CEE1000AEFA8 /* StatsView.swift in Sources */,
 				87D65D59279A738000F3DDFB /* GameView.swift in Sources */,
 				87CF15AE2792588800F37766 /* WordleApp.swift in Sources */,
+				874A59CA27A3DDC8000AEFA8 /* SoundManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
