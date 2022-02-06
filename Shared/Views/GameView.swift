@@ -19,18 +19,14 @@ struct GameView: View {
             ZStack(alignment: .top) {
                 VStack(spacing: 10) {
                     HStack {
-                        if vm.isTwoPlayer {
-                            Image(systemName: "questionmark.circle")
-                                .font(.title2)
-                                .foregroundColor(.white.opacity(0.3))
-                        } else {
+                        if !vm.isTwoPlayer {
                             Button(action: {
                                 self.presentationMode.wrappedValue.dismiss()
                                 vm.isDailyMode = false
                             }) {
                                 Image(systemName: "person.2.circle")
                                     .font(.title2)
-                                .foregroundColor(.white.opacity(0.3))
+                                    .foregroundColor(.white.opacity(0.3))
                             }
                         }
                         
@@ -49,22 +45,27 @@ struct GameView: View {
                             .font(.largeTitle)
                             .bold()
                         Spacer()
-                        Button(action: {
-                            withAnimation(.spring()) { vm.showStats.toggle() }
-                        }) {
+                        if !vm.isTwoPlayer && !vm.isDailyMode {
                             Image(systemName: "text.justify.leading")
                                 .font(.title2)
-                                .foregroundColor(.white.opacity(0.3))
                                 .padding(.horizontal, 4)
+                                .opacity(0)
                         }
-                        if !vm.isDailyMode {
+                        
+                        if !vm.isTwoPlayer {
                             Button(action: {
-                                showSettings.toggle()
+                                withAnimation(.spring()) { vm.showStats.toggle() }
                             }) {
-                                Image(systemName: "gear")
+                                Image(systemName: "text.justify.leading")
                                     .font(.title2)
                                     .foregroundColor(.white.opacity(0.3))
+                                    .padding(.horizontal, 4)
                             }
+                        } else {
+                            Image(systemName: "text.justify.leading")
+                                .font(.title2)
+                                .padding(.horizontal, 4)
+                                .opacity(0)
                         }
                     }
                     .padding()
@@ -97,7 +98,6 @@ struct GameView: View {
                     .offset(y: vm.showsNotifcation ? 0 : -120)
                 
             }
-//            .blur(radius: vm.showWin || vm.showLoss || showAreYouSure ? 15 : 0)
             .opacity(vm.showWin || vm.showLoss || showAreYouSure || vm.showStats ? 0.2 : 1)
             
             WinScreenView(vm: vm)

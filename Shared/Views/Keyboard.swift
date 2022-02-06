@@ -21,10 +21,10 @@ struct KeyView: View {
                 color
                     .onAppear {
                         switch state {
-                        case .correct: color = Color("green")
-                        case .contains: color = Color("yellow")
-                        case .none: color = Color("keys")
-                        default: color = .gray
+                        case .correct: withAnimation(.easeInOut) { color = Color("green") }
+                        case .contains: withAnimation(.easeInOut) { color = Color("yellow") }
+                        case .none: withAnimation(.easeInOut) { color = Color("keys") }
+                        default: withAnimation(.easeInOut) { color = .gray }
                         }
                     }
                 

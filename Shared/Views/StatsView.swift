@@ -23,9 +23,11 @@ struct StatsView: View {
                 }
             }
             Text("STATISTICS").font(.title2).bold()
+            Text(vm.isDailyMode ? "Daily" : "Single Player").foregroundColor(.gray)
+            
             HStack(alignment: .top, spacing: 20) {
                 VStack {
-                    Text(String(vm.gamesPlayed)).font(.title).bold()
+                    Text(String(vm.activeStat.gamesPlayed)).font(.title).bold()
                     Text("Played")
                 }
                 VStack {
@@ -33,26 +35,27 @@ struct StatsView: View {
                     Text("Win %").multilineTextAlignment(.center)
                 }
                 VStack {
-                    Text(String(vm.currentStreak)).font(.title).bold()
+                    Text(String(vm.activeStat.currentStreak)).font(.title).bold()
                     Text("Current\nStreak").multilineTextAlignment(.center)
                 }
                 VStack {
-                    Text(String(vm.maxStreak)).font(.title).bold()
+                    Text(String(vm.activeStat.maxStreak)).font(.title).bold()
                     Text("Max\nStreak").multilineTextAlignment(.center)
                 }
             }
             .padding(8)
             Text("GUESS DISTRIBUTION").font(.title3).bold().padding(.top, 8)
+            
             VStack(alignment: .leading) {
                 ForEach(0 ..< 6) { i in
                     HStack {
                         Text(String(i+1))
                         GeometryReader { geometry in
                             ZStack {
-                                Color.gray
-                                Text(String(vm.guessDistribution[i])).bold().frame(maxWidth: .infinity, alignment: .trailing).padding(.trailing, 8)
+                                i == vm.highlightedDistribution ? Color("green") : Color.gray
+                                Text(String(vm.activeStat.distribution[i])).bold().frame(maxWidth: .infinity, alignment: .trailing).padding(.trailing, 8)
                             }
-                            .frame(width: (geometry.size.width * (Double(vm.guessDistribution[i])/Double(vm.maxGuess))) < 30 ? 30 : (geometry.size.width * (Double(vm.guessDistribution[i])/Double(vm.maxGuess)))
+                            .frame(width: (geometry.size.width * (Double(vm.activeStat.distribution[i])/Double(vm.maxGuess))) < 30 ? 30 : (geometry.size.width * (Double(vm.activeStat.distribution[i])/Double(vm.maxGuess)))
                             )
                             
                         }

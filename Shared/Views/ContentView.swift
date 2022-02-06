@@ -22,14 +22,6 @@ struct ContentView: View {
                         .bold()
                     Spacer()
                     Button(action: {
-                        
-                    }) {
-                        Image(systemName: "text.justify.leading")
-                            .font(.title2)
-                            .foregroundColor(.white.opacity(0.3))
-                            .padding(.horizontal, 4)
-                    }
-                    Button(action: {
                         showSettings.toggle()
                     }) {
                         Image(systemName: "gear")
@@ -53,6 +45,7 @@ struct ContentView: View {
                         vm.solutionArr = solutionArr
                         vm.letterCount = 5
                         singlePlayerActive = true
+                        vm.activeStat = StatsHelper().fetchDailyStat()
                     }) {
                         VStack {
                             Image(systemName: "calendar").font(.system(size: 50))
@@ -70,6 +63,7 @@ struct ContentView: View {
                         singlePlayerActive = true
                         vm.isTwoPlayer = false
                         vm.resetGame()
+                        vm.activeStat = StatsHelper().fetchSingleStat()
                     }) {
                         VStack {
                             Image(systemName: "person.fill").font(.system(size: 50))

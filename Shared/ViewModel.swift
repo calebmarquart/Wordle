@@ -10,10 +10,6 @@ import CoreData
 
 class ViewModel: ObservableObject {
     @AppStorage("letterCount") var letterCount: Int = 5 { didSet { resetGame() }}
-    @AppStorage("gamesPlayed") var gamesPlayed: Int = 0 { didSet { winPercentage = winPercentage(a: gamesWon, b: gamesPlayed) }}
-    @AppStorage("gamesWon") var gamesWon: Int = 0 { didSet { winPercentage = winPercentage(a: gamesWon, b: gamesPlayed) }}
-    @AppStorage("currentStreak") var currentStreak = 0
-    @AppStorage("maxStreak") var maxStreak = 0
     @AppStorage("soundEnabled") var soundEnabled: Bool = true
     @AppStorage("hapticsEnabled") var hapticsEnabled: Bool = true
 
@@ -21,6 +17,16 @@ class ViewModel: ObservableObject {
     @Published var word: String = ""
     @Published var solutionArr = [Character]()
     @Published var winPercentage: Int = 0
+    @Published var activeStat: StatObject = StatObject(gamesPlayed: 0, gamesWon: 0, currentStreak: 0, maxStreak: 0, distribution: [0, 0, 0, 0, 0, 0]) { didSet {
+        winPercentage = winPercentage(a: activeStat.gamesWon, b: activeStat.gamesPlayed)
+        if (activeStat.distribution.max() ?? 1) > 0 {
+            maxGuess = activeStat.distribution.max() ?? 1
+        } else {
+            maxGuess = 1
+        }
+    }}
+    @Published var highlightedDistribution: Int = -1
+    @Published var maxGuess: Int = 1
     @Published var textField: String = ""
     @Published var guessIndex: Int = 0
     @Published var letterIndex: Int = 0
@@ -32,8 +38,6 @@ class ViewModel: ObservableObject {
     @Published var showStats: Bool = false
     @Published var isTwoPlayer: Bool = false
     @Published var isDailyMode: Bool = false
-    @Published var guessDistribution: [Int] = [0, 0, 0, 0, 0, 0]
-    @Published var maxGuess: Int = 1
     @Published var greenLetters = Set<Character>()
     @Published var noneLetters = Set<Character>()
     @Published var yellowLetters = Set<Character>()
@@ -71,17 +75,6 @@ class ViewModel: ObservableObject {
     
     init() {
         collection = createEmptyBoard(rows: 6, rowLength: letterCount)
-        winPercentage = winPercentage(a: gamesWon, b: gamesPlayed)
-        if UserDefaults.standard.object(forKey: "guessDistribution") == nil {
-            let guessDistributionArray = [0, 0, 0, 0, 0, 0]
-            UserDefaults.standard.set(guessDistributionArray, forKey: "guessDistribution")
-        }
-        guessDistribution = UserDefaults.standard.object(forKey: "guessDistribution") as? [Int] ?? []
-        if (guessDistribution.max() ?? 1) > 0 {
-            maxGuess = guessDistribution.max() ?? 1
-        } else {
-            maxGuess = 1
-        }
     }
     
     func guess() {
@@ -94,8 +87,13 @@ class ViewModel: ObservableObject {
         }
         let word = String(newArr).uppercased()
         print("You guessed the word \(word)")
-        if guessIndex == 0 {
-            gamesPlayed += 1
+        if guessIndex == 0 && !isTwoPlayer {
+            activeStat.gamesPlayed += 1
+            if isDailyMode {
+                StatsHelper().saveDailyStat(activeStat)
+            } else {
+                StatsHelper().saveSingleStat(activeStat)
+            }
         }
         
         guard word.isCorrect() else { print("NOT A REAL WORD"); showNotification(message: notInList); return }
@@ -110,7 +108,8 @@ class ViewModel: ObservableObject {
             solutionCharsTaken.append(false)
         }
         
-        for i in 0 ..< guessArr.count {
+        // Check 'correct' letter in word array
+        for i in guessArr.indices {
             if guessArr[i] == solutionArr[i] {
                 collection[guessIndex][i].state = .correct
                 solutionCharsTaken[i] = true
@@ -119,7 +118,9 @@ class ViewModel: ObservableObject {
                 noneLetters.insert(guessArr[i])
             }
         }
-        for i in 0 ..< guessArr.count {
+        
+        // Check for 'present' letters
+        for i in guessArr.indices {
             if let foo = solutionArr.firstIndex(where: {$0 == guessArr[i]}) {
                 if !solutionCharsTaken[foo] {
                     collection[guessIndex][i].state = .contains
@@ -134,7 +135,9 @@ class ViewModel: ObservableObject {
                 noneLetters.insert(guessArr[i])
             }
         }
-        for i in 0 ..< guessArr.count {
+        
+        // Check 'correct' postitions again to prevent any overwrites from appearing
+        for i in guessArr.indices {
             if guessArr[i] == solutionArr[i] {
                 collection[guessIndex][i].state = .correct
                 greenLetters.insert(guessArr[i])
@@ -145,36 +148,57 @@ class ViewModel: ObservableObject {
         guessIndex += 1
         letterIndex = 0
         updateKeys()
-        greenLetters = Set<Character>()
-        noneLetters = Set<Character>()
-        yellowLetters = Set<Character>()
+        
         if word == self.word {
-            gameCompleted = true
-            currentStreak += 1
-            gamesWon += 1
-            if maxStreak < currentStreak {
-                maxStreak = currentStreak
-            }
-            var currentDistribution = UserDefaults.standard.object(forKey: "guessDistribution") as? [Int] ?? []
-            currentDistribution[guessIndex-1] += 1
-            saveGuessDistribution(currentDistribution)
-            if hapticsEnabled { HapticsManager.instance.notification(.success) }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation(.spring()) { self.showWin = true }
-                if self.soundEnabled { SoundMangaer.instance.playSound(winSound) }
-            }
-            
+            triggerWin()
         } else if guessIndex > 5 {
+            triggerLoss()
+        }
+    }
+    
+    func triggerWin() {
+        if !isTwoPlayer {
             gameCompleted = true
-            if maxStreak < currentStreak {
-                maxStreak = currentStreak
+            activeStat.currentStreak += 1
+            activeStat.gamesWon += 1
+            if activeStat.maxStreak < activeStat.currentStreak {
+                activeStat.maxStreak = activeStat.currentStreak
             }
-            currentStreak = 0
-            if hapticsEnabled { HapticsManager.instance.notification(.error) }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation(.spring()) { self.showLoss = true }
-                if self.soundEnabled { SoundMangaer.instance.playSound(lossSound) }
+            activeStat.distribution[guessIndex-1] += 1
+            
+            if isDailyMode {
+                highlightedDistribution = guessIndex-1
+                StatsHelper().saveDailyStat(activeStat)
+            } else {
+                StatsHelper().saveSingleStat(activeStat)
             }
+        }
+        
+        if hapticsEnabled { HapticsManager.instance.notification(.success) }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation(.spring()) { self.showWin = true }
+            if self.soundEnabled { SoundMangaer.instance.playSound(winSound) }
+        }
+    }
+    
+    func triggerLoss() {
+        gameCompleted = true
+        if !isTwoPlayer {
+            if activeStat.maxStreak < activeStat.currentStreak {
+                activeStat.maxStreak = activeStat.currentStreak
+            }
+            activeStat.currentStreak = 0
+            
+            if isDailyMode {
+                StatsHelper().saveDailyStat(activeStat)
+            } else {
+                StatsHelper().saveSingleStat(activeStat)
+            }
+        }
+        if hapticsEnabled { HapticsManager.instance.notification(.error) }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            withAnimation(.spring()) { self.showLoss = true }
+            if self.soundEnabled { SoundMangaer.instance.playSound(lossSound) }
         }
     }
     
@@ -215,11 +239,15 @@ class ViewModel: ObservableObject {
     }
     
     func resetStatistics() {
-        maxStreak = 0
-        currentStreak = 0
-        gamesWon = 0
-        gamesPlayed = 0
-        saveGuessDistribution([0, 0, 0, 0, 0, 0])
+        activeStat = StatObject(gamesPlayed: 0, gamesWon: 0, currentStreak: 0, maxStreak: 0, distribution: [0, 0, 0, 0, 0, 0])
+        highlightedDistribution = -1
+        
+        if isDailyMode {
+            StatsHelper().saveDailyStat(activeStat)
+        } else {
+            StatsHelper().saveSingleStat(activeStat)
+        }
+        
     }
     
     func resetGame() {
@@ -234,6 +262,7 @@ class ViewModel: ObservableObject {
         guessIndex = 0
         letterIndex = 0
         gameCompleted = false
+        highlightedDistribution = -1
         
         if !isTwoPlayer && !isDailyMode {
             changeRandomWord()
@@ -245,17 +274,6 @@ class ViewModel: ObservableObject {
             return 0
         } else {
             return Int((Double(a)/Double(b) * 100))
-        }
-    }
-    
-    func saveGuessDistribution(_ object: [Int]) {
-        let userDefaults = UserDefaults.standard
-        userDefaults.set(object, forKey: "guessDistribution")
-        guessDistribution = userDefaults.object(forKey: "guessDistribution") as? [Int] ?? []
-        if (guessDistribution.max() ?? 1) > 0 {
-            maxGuess = guessDistribution.max() ?? 1
-        } else {
-            maxGuess = 1
         }
     }
     
@@ -336,5 +354,10 @@ class ViewModel: ObservableObject {
                 keyboard[firstIndex][secondIndex].state = .correct
             }
         }
+        
+        // Makes character sets empty after each guess
+        greenLetters = Set<Character>()
+        noneLetters = Set<Character>()
+        yellowLetters = Set<Character>()
     }
 }
