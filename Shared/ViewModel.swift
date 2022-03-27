@@ -103,45 +103,50 @@ class ViewModel: ObservableObject {
             guessArr.append(char)
         }
         
-        var solutionCharsTaken = [Bool]()
-        for _ in 0..<letterCount {
-            solutionCharsTaken.append(false)
-        }
+        var numOfOccurencesForEachLetter = [Character: Int]()
         
-        // Check 'correct' letter in word array
         for i in guessArr.indices {
-            if guessArr[i] == solutionArr[i] {
-                collection[guessIndex][i].state = .correct
-                solutionCharsTaken[i] = true
-            } else if !solutionArr.contains(guessArr[i]) {
-                collection[guessIndex][i].state = .none
-                noneLetters.insert(guessArr[i])
+            let guessedChar = guessArr[i]
+            let numOfOccurences: Int = {
+                var n = 0
+                for char in solutionArr {
+                    if guessedChar == char {
+                        n += 1
+                    }
+                }
+                return n
+            }()
+            if numOfOccurencesForEachLetter[guessedChar] == nil {
+                numOfOccurencesForEachLetter[guessedChar] = numOfOccurences
             }
         }
         
-        // Check for 'present' letters
         for i in guessArr.indices {
-            if let foo = solutionArr.firstIndex(of: guessArr[i]) {
-                if !solutionCharsTaken[foo] {
-                    collection[guessIndex][i].state = .contains
-                    yellowLetters.insert(guessArr[i])
-                    solutionCharsTaken[foo] = true
-                } else {
-                    collection[guessIndex][i].state = .none
-                    noneLetters.insert(guessArr[i])
-                }
+            let guessedChar = guessArr[i]
+            let solutionChar = solutionArr[i]
+            
+            if guessedChar == solutionChar {
+                collection[guessIndex][i].state = .correct
+                numOfOccurencesForEachLetter[guessedChar]! -= 1
+            }
+        }
+        
+        for i in guessArr.indices {
+            let guessedChar = guessArr[i]
+            if !(guessedChar == solutionArr[i]) && numOfOccurencesForEachLetter[guessedChar]! > 0 {
+                collection[guessIndex][i].state = .contains
+                numOfOccurencesForEachLetter[guessedChar]! -= 1
+                yellowLetters.insert(guessedChar)
             } else {
                 collection[guessIndex][i].state = .none
-                noneLetters.insert(guessArr[i])
+                noneLetters.insert(guessedChar)
             }
         }
         
-        // Check 'correct' postitions again to prevent any overwrites from appearing
         for i in guessArr.indices {
             if guessArr[i] == solutionArr[i] {
                 collection[guessIndex][i].state = .correct
                 greenLetters.insert(guessArr[i])
-                solutionCharsTaken[i] = true
             }
         }
         
