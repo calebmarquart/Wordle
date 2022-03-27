@@ -121,7 +121,7 @@ class ViewModel: ObservableObject {
         
         // Check for 'present' letters
         for i in guessArr.indices {
-            if let foo = solutionArr.firstIndex(where: {$0 == guessArr[i]}) {
+            if let foo = solutionArr.firstIndex(of: guessArr[i]) {
                 if !solutionCharsTaken[foo] {
                     collection[guessIndex][i].state = .contains
                     yellowLetters.insert(guessArr[i])
@@ -361,3 +361,4 @@ class ViewModel: ObservableObject {
         yellowLetters = Set<Character>()
     }
 }
+
